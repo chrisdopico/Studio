@@ -1,0 +1,59 @@
+package com.commons.studio.dao.studioclass;
+
+import com.commons.studio.model.StudioClass;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+
+
+import java.time.LocalDate;
+import java.util.Optional;
+
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+
+
+@SpringBootTest
+class StudioClassJPATest {
+
+    @Autowired
+    IStudioClassJPA underTest;
+
+    @Test
+    void itShouldCheckIfGetAlLStudioClasses() {
+        //given
+        StudioClass studioClass1 = new StudioClass(5,
+                "Joe Johnson",
+                LocalDate.of(2022,12,13),
+                LocalDate.of(2022,12,15),
+                20);
+
+        StudioClass studioClass2 = new StudioClass(6,
+                "Carl Dempsey",
+                LocalDate.of(2023,12,15),
+                LocalDate.of(2023,12,17),
+                10);
+
+        underTest.save(studioClass1);
+        underTest.save(studioClass2);
+        //when
+        Integer expected = underTest.findAll().size();
+        //then
+        assertThat(expected).isEqualTo(6);
+    }
+
+
+    @Test
+    void itShouldCreateAStudioClass() {
+        //given
+        StudioClass studioClass1 = new StudioClass(5,
+                "Joe Johnson",
+                LocalDate.of(2022,12,13),
+                LocalDate.of(2022,12,15),
+                20);
+        underTest.save(studioClass1);
+        //when
+        Optional<StudioClass> expected = underTest.findById(5);
+        //then
+        assertThat(expected.isPresent()).isTrue();
+    }
+}
