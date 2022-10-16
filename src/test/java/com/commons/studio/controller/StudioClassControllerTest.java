@@ -80,7 +80,7 @@ class StudioClassControllerTest {
         //given
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.findAndRegisterModules();
-        StudioClass studioClass = new StudioClass(2,
+        StudioClass studioClass = new StudioClass(1,
                 "Yoga",
                 LocalDate.of(2022,11,16),
                 LocalDate.of(2022,11,18),
@@ -91,5 +91,61 @@ class StudioClassControllerTest {
                 .content(objectMapper.writeValueAsString(studioClass)))
                 .andExpect(status().isCreated())
                 .andExpect(content().string("New class created"));
+    }
+
+    @Test
+    void itShouldReturnValidationErrorWhenNameIsEmpty() throws Exception {
+        //given
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.findAndRegisterModules();
+        StudioClass studioClass = new StudioClass(1,
+                "",
+                LocalDate.of(2022,11,16),
+                LocalDate.of(2022,11,18),
+                15);
+
+        //when
+        mvc.perform(post("/classes").contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(studioClass)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("message").value("Validation Failed"));
+    }
+
+    @Test
+    void itShouldReturnValidationErrorWhenNameHasWhiteSpaces() throws Exception {
+        //given
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.findAndRegisterModules();
+        StudioClass studioClass = new StudioClass(1,
+                " ",
+                LocalDate.of(2022,11,16),
+                LocalDate.of(2022,11,18),
+                15);
+
+        //when
+        mvc.perform(post("/classes").contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(studioClass)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("message").value("Validation Failed"))
+                .andExpect(jsonPath("details.[0]").value("name must not have white spaces"));
+    }
+
+    @Test
+    void itShouldReturnValidationErrorWhenCapacityIsNotPositive() throws Exception {
+        //given
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.findAndRegisterModules();
+        StudioClass studioClass = new StudioClass(1,
+                "Boxing",
+                LocalDate.of(2022,11,16),
+                LocalDate.of(2022,11,18),
+                -1);
+
+        //when
+        mvc.perform(post("/classes").contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(studioClass)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("message").value("Validation Failed"))
+                .andExpect(jsonPath("details.[0]").value("capacity must be an integer greater than 0"));
     }
 }

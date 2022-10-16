@@ -28,7 +28,7 @@ public class Book {
     private Integer id;
 
     @NotEmpty(message = "personName must not be empty")
-    @NotBlank(message = "personName must not be white spaces")
+    @NotBlank(message = "personName must not have white spaces")
     @Column(name = "per_nam")
     private String personName;
 

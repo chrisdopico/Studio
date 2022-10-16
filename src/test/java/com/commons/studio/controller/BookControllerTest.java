@@ -77,4 +77,39 @@ class BookControllerTest {
                 .andExpect(status().isCreated())
                 .andExpect(content().string("New booking created"));
     }
+
+    @Test
+    void itShouldReturnValidationErrorWhenNameIsEmpty() throws Exception {
+        //given
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.findAndRegisterModules();
+        Book book = new Book (1,
+                "",
+                LocalDate.of(2022,11,
+                        16));
+
+        //when
+        mvc.perform(post("/bookings").contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(book)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("message").value("Validation Failed"));
+    }
+
+    @Test
+    void itShouldReturnValidationErrorWhenNameHasWhiteSpaces() throws Exception {
+        //given
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.findAndRegisterModules();
+        Book book = new Book (1,
+                " ",
+                LocalDate.of(2022,11,
+                        16));
+
+        //when
+        mvc.perform(post("/bookings").contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(book)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("message").value("Validation Failed"))
+                .andExpect(jsonPath("details.[0]").value("personName must not have white spaces"));
+    }
 }

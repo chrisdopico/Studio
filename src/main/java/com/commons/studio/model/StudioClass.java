@@ -26,7 +26,7 @@ public class StudioClass {
     private Integer id;
 
     @NotEmpty(message = "name must not be empty")
-    @NotBlank(message = "name must not be white spaces")
+    @NotBlank(message = "name must not have white spaces")
     @Column(name = "cla_nam")
     private String name;
 
